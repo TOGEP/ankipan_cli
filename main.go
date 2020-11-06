@@ -7,20 +7,20 @@ import(
 )
 
 func main(){
-  anserAction := flag.NewFlagSet("anser", flag.ExitOnError)
+  answerAction := flag.NewFlagSet("answer", flag.ExitOnError)
   listAction := flag.NewFlagSet("list", flag.ContinueOnError)
   addAction := flag.NewFlagSet("add", flag.ExitOnError)
   addProblem := addAction.String("problem", "", "problem")
-  addAnser := addAction.String("anser", "", "anser")
+  addAnswer := addAction.String("answer", "", "answer")
 
   if len(os.Args) < 2{
-    fmt.Println("expected 'anser' or 'list' or 'add' subcommands")
+    fmt.Println("expected 'answer' or 'list' or 'add' subcommands")
     os.Exit(1)
   }
 
   switch os.Args[1] {
-    case "anser":
-      anserAction.Parse(os.Args[2:])
+    case "answer":
+      answerAction.Parse(os.Args[2:])
 
     case "list":
       listAction.Parse(os.Args[2:])
