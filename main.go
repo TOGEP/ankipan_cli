@@ -4,6 +4,7 @@ import(
   "flag"
   "fmt"
   "os"
+  "database/sql"
 )
 
 func main(){
@@ -27,8 +28,23 @@ func main(){
 
     case "add":
       addAction.Parse(os.Args[2:])
-      fmt.Println(*addProblem)
-      fmt.Println(*addAnser)
+      db, err := getDB()
+      defer db.Close()
+      if err != nil{
+        panic(err.Error())
+      }
+      query := "INSERT INTO cards(problem_statement, answer_text, question_time, solved_count) VALUES(?, ?, NOW(), 0"
+      _, err = db.Exec(query, *addProblem, *addAnswer)
+      if err != nil{
+        panic(err.Error())
+      }
   }
+}
 
+func getDB()(db *sql.DB, err error){
+  db, err = sql.Open("mysql", "root:@/ankipan_cli")
+  if err != nil{
+    panic(err.Error())
+  }
+  return db, err
 }
