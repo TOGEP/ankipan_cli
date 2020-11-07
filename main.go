@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+  "io/ioutil"
 )
 
 func main(){
@@ -20,19 +21,28 @@ func main(){
     os.Exit(1)
   }
 
+  home, err := os.UserHomeDir()
+  if err != nil{
+    log.Fatal(err)
+  }
+
   switch os.Args[1] {
-    case "run":
+  case "run":
       runAction.Parse(os.Args[2:])
 
     case "list":
       listAction.Parse(os.Args[2:])
-
-    case "add":
-      addAction.Parse(os.Args[2:])
-      home, err := os.UserHomeDir()
+      file, err := os.Open(filepath.Join(home, ".ankipan"))
       if err != nil{
         log.Fatal(err)
       }
+      defer file.Close()
+
+      b, err := ioutil.ReadAll(file)
+      fmt.Println(string(b))
+
+    case "add":
+      addAction.Parse(os.Args[2:])
       file, err := os.OpenFile(filepath.Join(home, ".ankipan"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
       if err != nil{
         log.Fatal(err)
