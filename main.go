@@ -1,10 +1,11 @@
 package main
 
-import(
-  "flag"
-  "fmt"
-  "os"
-  "database/sql"
+import (
+	"flag"
+	"fmt"
+	"log"
+	"os"
+	"path/filepath"
 )
 
 func main(){
@@ -28,23 +29,16 @@ func main(){
 
     case "add":
       addAction.Parse(os.Args[2:])
-      db, err := getDB()
-      defer db.Close()
+      home, err := os.UserHomeDir()
       if err != nil{
-        panic(err.Error())
+        log.Fatal(err)
       }
-      query := "INSERT INTO cards(problem_statement, answer_text, question_time, solved_count) VALUES(?, ?, NOW(), 0"
-      _, err = db.Exec(query, *addProblem, *addAnswer)
+      file, err := os.OpenFile(filepath.Join(home, ".ankipan"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
       if err != nil{
-        panic(err.Error())
+        log.Fatal(err)
       }
-  }
-}
+      defer file.Close()
 
-func getDB()(db *sql.DB, err error){
-  db, err = sql.Open("mysql", "root:@/ankipan_cli")
-  if err != nil{
-    panic(err.Error())
+      fmt.Fprintf(file, "%s, %s\n", *addProblem, *addAnswer)
   }
-  return db, err
 }
