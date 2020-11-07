@@ -9,6 +9,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -41,8 +42,19 @@ func main(){
       lineLen, lines := GetLine(file)
 
       rand.Seed(time.Now().UnixNano())
-      fmt.Println(lines[rand.Intn(lineLen)])
+      n := rand.Intn(lineLen)
+      problem := lines[n][:strings.Index(lines[n], ",")]
+      answer := lines[n][strings.Index(lines[n], ",")+2:]
 
+      fmt.Printf("question : %v\nanswer   : ", problem)
+      var str string
+      fmt.Scan(&str)
+
+      if str == answer{
+        fmt.Println("○")
+      }else{
+        fmt.Println("×")
+      }
 
 
     case "list":
