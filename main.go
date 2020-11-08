@@ -15,6 +15,7 @@ import (
 
 func main(){
   runAction := flag.NewFlagSet("run", flag.ExitOnError)
+  runNum := runAction.Int("num", 10, "question number")
   listAction := flag.NewFlagSet("list", flag.ContinueOnError)
   addAction := flag.NewFlagSet("add", flag.ExitOnError)
   addProblem := addAction.String("problem", "", "problem")
@@ -39,12 +40,11 @@ func main(){
       }
       defer file.Close()
 
-      lineLen, lines := GetLine(file)
+    pickup := PickUp(lineLen, *runNum)
 
-      rand.Seed(time.Now().UnixNano())
-      n := rand.Intn(lineLen)
-      problem := lines[n][:strings.Index(lines[n], ",")]
-      answer := lines[n][strings.Index(lines[n], ",")+2:]
+    for n := 0; n < lineLen;{
+      problem := lines[pickup[n]][:strings.Index(lines[n], ",")]
+      answer := lines[pickup[n]][strings.Index(lines[n], ",")+2:]
 
       fmt.Printf("question : %v\nanswer   : ", problem)
       var str string
@@ -55,6 +55,8 @@ func main(){
       }else{
         fmt.Println("×")
       }
+      n++
+    }
 
 
     case "list":
@@ -89,4 +91,26 @@ func GetLine(file *os.File) (int, []string){
     text = append(text, scanner.Text())
   }
   return lines, text
+}
+
+func PickUp(lineLen int, num int)[]int{
+  selected := make(map[int]bool)
+  if lineLen < num {
+    num = lineLen
+  }
+  rand.Seed(time.Now().UnixNano())
+  for cnt := 0; cnt < num;{
+    n := rand.Intn(lineLen)
+    if !selected[n]{
+      selected[n] = true
+      cnt++
+    }
+  }
+  i := 0
+  result := make([]int, lineLen)
+  for key := range selected{
+    result[i] = key
+    i++
+  }
+  return result
 }
